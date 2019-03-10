@@ -33,6 +33,26 @@ class LoginScreen extends Component {
     });
   }
 
+  login = async () => {
+    const { username, channel } = this.state;
+    const user_id = stringHash(username).toString();
+
+    this.setState({
+      isLoading: true
+    });
+
+    this.pusher = new Pusher(PUSHER_APP_KEY, {
+      authEndpoint: `${BASE_URL}/pusher/auth`,
+      cluster: PUSHER_APP_CLUSTER,
+      encrypted: true
+    });
+
+    this.my_channel = this.pusher.subscribe(`private-user-${username}`); 
+    this.my_channel.bind("pusher:subscription_error", (status) => {
+      console.log("error subscribing to channel: ", status);
+    });
+  }
+
   render() {
     return (
       <Container>
